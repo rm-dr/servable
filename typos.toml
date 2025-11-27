@@ -1,0 +1,8 @@
+[default]
+extend-ignore-re = [
+	# Line block with # spellchecker:<on|off>
+	"(?s)(#|//)\\s*spellchecker:off.*?\\n\\s*(#|//)\\s*spellchecker:on",
+]
+
+[files]
+extend-exclude = ["crates/servable/htmx"]
