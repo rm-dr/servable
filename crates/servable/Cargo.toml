@@ -1,0 +1,38 @@
+[package]
+name = "servable"
+description = "A tiny web stack featuring htmx, Axum, Rust, and Maud."
+keywords = ["htmx", "web", "webui", "maud", "framework"]
+categories = ["web-programming", "web-programming::http-server"]
+rust-version = { workspace = true }
+edition = { workspace = true }
+version = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+readme = { workspace = true }
+authors = { workspace = true }
+
+[lints]
+workspace = true
+
+[dependencies]
+axum = { workspace = true }
+chrono = { workspace = true }
+maud = { workspace = true }
+serde = { workspace = true }
+serde_urlencoded = { workspace = true }
+tower = { workspace = true }
+tracing = { workspace = true }
+rand = { workspace = true }
+
+tokio = { workspace = true, optional = true }
+image = { workspace = true, optional = true }
+strum = { workspace = true, optional = true }
+thiserror = { workspace = true, optional = true }
+
+[dev-dependencies]
+tower-http = { workspace = true }
+
+[features]
+default = []
+image = ["dep:image", "dep:strum", "dep:thiserror", "dep:tokio"]
+"htmx-2.0.8" = []

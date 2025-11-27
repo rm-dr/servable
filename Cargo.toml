@@ -1,0 +1,85 @@
+[workspace]
+members = ["crates/*"]
+resolver = "2"
+
+[workspace.package]
+rust-version = "1.90.0"
+edition = "2024"
+version = "0.0.1"
+license = "GPL-3.0"
+repository = "https://github.com/rm-dr/servable"
+readme = "README.md"
+authors = ["rm-dr"]
+
+[workspace.lints.rust]
+unused_import_braces = "deny"
+unit_bindings = "deny"
+single_use_lifetimes = "deny"
+non_ascii_idents = "deny"
+macro_use_extern_crate = "deny"
+elided_lifetimes_in_paths = "deny"
+absolute_paths_not_starting_with_crate = "deny"
+explicit_outlives_requirements = "warn"
+unused_crate_dependencies = "warn"
+redundant_lifetimes = "warn"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+todo = "deny"
+uninlined_format_args = "allow"
+result_large_err = "allow"
+too_many_arguments = "allow"
+upper_case_acronyms = "deny"
+needless_return = "allow"
+new_without_default = "allow"
+tabs_in_doc_comments = "allow"
+dbg_macro = "deny"
+allow_attributes = "deny"
+create_dir = "deny"
+filetype_is_file = "deny"
+integer_division = "allow"
+lossy_float_literal = "deny"
+map_err_ignore = "deny"
+mutex_atomic = "deny"
+needless_raw_strings = "deny"
+str_to_string = "deny"
+string_add = "deny"
+string_to_string = "deny"
+use_debug = "allow"
+verbose_file_reads = "deny"
+large_types_passed_by_value = "deny"
+wildcard_dependencies = "deny"
+negative_feature_names = "deny"
+redundant_feature_names = "deny"
+multiple_crate_versions = "deny"
+missing_safety_doc = "warn"
+identity_op = "allow"
+print_stderr = "deny"
+print_stdout = "deny"
+comparison_chain = "allow"
+unimplemented = "deny"
+unwrap_used = "warn"
+expect_used = "warn"
+type_complexity = "allow"
+cargo_common_metadata = "deny"
+
+
+#
+# MARK: dependencies
+#
+
+[workspace.dependencies]
+
+axum = "0.8.7"
+chrono = "0.4.42"
+image = "0.25.9"
+maud = "0.27.0"
+rand = "0.9.0"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_urlencoded = "0.7.1"
+strum = { version = "0.27.2", features = ["derive"] }
+thiserror = "2.0.17"
+tokio = "1.48.0"
+tower = "0.5.2"
+tower-http = { version = "0.6.7", features = ["compression-full"] }
+tracing = "0.1.41"
