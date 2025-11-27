@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 0 */5 * *"
+
+jobs:
+  typos:
+    name: "Check typos"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check typos
+        uses: crate-ci/typos@master
+        with:
+          config: ./typos.toml
+
+  lychee:
+    name: "Check links"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check links
+        id: lychee
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: --config ./lychee.toml .
+          fail: true
+
+  clippy:
+    name: "Clippy"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Install Rust"
+        run: |
+          sudo apt update
+          DEBIAN_FRONTEND=noninteractive \
+            sudo apt install --yes rustup
+            rustup default 1.91.0
+            rustup component add clippy
+
+      - name: Run clippy
+        run: cargo clippy --all-targets --all-features
+
+  buildandtest:
+    name: "Build and test"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Install Rust"
+        run: |
+          sudo apt update
+          DEBIAN_FRONTEND=noninteractive \
+            sudo apt install --yes rustup
+            rustup default 1.91.0
+            cargo install cargo-all-features
+
+      - name: Build
+        run: cargo build-all-features -- --release
+
+      - name: Test
+        run: cargo test-all-features -- --release
