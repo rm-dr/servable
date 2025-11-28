@@ -5,7 +5,7 @@ resolver = "2"
 [workspace.package]
 rust-version = "1.90.0"
 edition = "2024"
-version = "0.0.3"
+version = "0.0.4"
 license = "GPL-3.0"
 repository = "https://github.com/rm-dr/servable"
 readme = "README.md"
