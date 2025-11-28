@@ -4,8 +4,6 @@ use std::pin::Pin;
 
 use crate::{RenderContext, Rendered, RenderedBody, mime::MimeType, servable::Servable};
 
-const TTL: Option<TimeDelta> = Some(TimeDelta::days(1));
-
 /// A static blob of bytes
 pub struct StaticAsset {
 	/// The data to return
@@ -13,6 +11,21 @@ pub struct StaticAsset {
 
 	/// The type of `bytes`
 	pub mime: MimeType,
+
+	/// How long to cache this response.
+	/// If None, never cache
+	pub ttl: Option<TimeDelta>,
+}
+
+impl StaticAsset {
+	/// Default ttl of a [StaticAsset]
+	pub const DEFAULT_TTL: Option<TimeDelta> = Some(TimeDelta::days(14));
+
+	/// Set `self.ttl`
+	pub const fn with_ttl(mut self, ttl: Option<TimeDelta>) -> Self {
+		self.ttl = ttl;
+		self
+	}
 }
 
 #[cfg(feature = "image")]
@@ -36,8 +49,8 @@ impl Servable for StaticAsset {
 						return Rendered {
 							code: StatusCode::BAD_REQUEST,
 							body: (),
-							ttl: TTL,
-							immutable: true,
+							ttl: self.ttl,
+							private: false,
 
 							headers: HeaderMap::new(),
 							mime: None,
@@ -51,8 +64,8 @@ impl Servable for StaticAsset {
 					return Rendered {
 						code: StatusCode::OK,
 						body: (),
-						ttl: TTL,
-						immutable: true,
+						ttl: self.ttl,
+						private: false,
 
 						headers: HeaderMap::new(),
 						mime: Some(
@@ -67,8 +80,8 @@ impl Servable for StaticAsset {
 					return Rendered {
 						code: StatusCode::OK,
 						body: (),
-						ttl: TTL,
-						immutable: true,
+						ttl: self.ttl,
+						private: false,
 
 						headers: HeaderMap::new(),
 						mime: Some(self.mime.clone()),
@@ -99,8 +112,8 @@ impl Servable for StaticAsset {
 						return Rendered {
 							code: StatusCode::BAD_REQUEST,
 							body: RenderedBody::String(err),
-							ttl: TTL,
-							immutable: true,
+							ttl: self.ttl,
+							private: false,
 
 							headers: HeaderMap::new(),
 							mime: None,
@@ -131,7 +144,7 @@ impl Servable for StaticAsset {
 									"Error while transforming image: {error:?}"
 								)),
 								ttl: None,
-								immutable: true,
+								private: false,
 
 								headers: HeaderMap::new(),
 								mime: None,
@@ -144,8 +157,8 @@ impl Servable for StaticAsset {
 							return Rendered {
 								code: StatusCode::OK,
 								body: RenderedBody::Bytes(bytes),
-								ttl: TTL,
-								immutable: true,
+								ttl: self.ttl,
+								private: false,
 
 								headers: HeaderMap::new(),
 								mime: Some(mime),
@@ -156,8 +169,8 @@ impl Servable for StaticAsset {
 							return Rendered {
 								code: StatusCode::INTERNAL_SERVER_ERROR,
 								body: RenderedBody::String(format!("{err}")),
-								ttl: TTL,
-								immutable: true,
+								ttl: self.ttl,
+								private: false,
 
 								headers: HeaderMap::new(),
 								mime: None,
@@ -170,8 +183,9 @@ impl Servable for StaticAsset {
 					return Rendered {
 						code: StatusCode::OK,
 						body: RenderedBody::Static(self.bytes),
-						ttl: TTL,
-						immutable: true,
+						ttl: self.ttl,
+						private: false,
+
 						headers: HeaderMap::new(),
 						mime: Some(self.mime.clone()),
 					};
@@ -191,8 +205,8 @@ impl Servable for StaticAsset {
 			return Rendered {
 				code: StatusCode::OK,
 				body: (),
-				ttl: TTL,
-				immutable: true,
+				ttl: self.ttl,
+				private: false,
 
 				headers: HeaderMap::new(),
 				mime: Some(self.mime.clone()),

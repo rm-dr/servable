@@ -35,9 +35,9 @@ impl Servable for Default404 {
 				code: StatusCode::NOT_FOUND,
 				body: (),
 				ttl: Some(TimeDelta::days(1)),
-				immutable: true,
 				headers: HeaderMap::new(),
 				mime: Some(MimeType::Html),
+				private: false,
 			};
 		})
 	}
@@ -73,6 +73,7 @@ impl Servable for Default404 {
 /// 		StaticAsset {
 /// 			bytes: "I am a page".as_bytes(),
 /// 			mime: MimeType::Text,
+/// 			ttl: StaticAsset::DEFAULT_TTL
 /// 		},
 /// 	);
 ///
@@ -243,14 +244,15 @@ impl Service<Request<Body>> for ServableRouter {
 			// Tweak headers
 			{
 				if !rend.headers.contains_key(header::CACHE_CONTROL) {
-					let max_age = rend.ttl.map(|x| x.num_seconds()).unwrap_or(1).max(1);
+					let max_age = rend.ttl.map(|x| x.num_seconds()).unwrap_or(0).max(0);
 
 					let mut value = String::new();
-					if rend.immutable {
-						value.push_str("immutable, ");
-					}
 
-					value.push_str("public, ");
+					value.push_str(match rend.private {
+						true => "private, ",
+						false => "public, ",
+					});
+
 					value.push_str(&format!("max-age={}, ", max_age));
 
 					#[expect(clippy::unwrap_used)]

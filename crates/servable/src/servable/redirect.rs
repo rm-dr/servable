@@ -60,7 +60,7 @@ impl Servable for Redirect {
 				headers,
 				body: (),
 				ttl: None,
-				immutable: true,
+				private: false,
 				mime: None,
 			};
 		})
