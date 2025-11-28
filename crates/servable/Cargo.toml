@@ -1,6 +1,6 @@
 [package]
 name = "servable"
-description = "A tiny web stack featuring htmx, Axum, Rust, and Maud."
+description = "A tiny web stack built around htmx, Axum, and Maud."
 keywords = ["htmx", "web", "webui", "maud", "framework"]
 categories = ["web-programming", "web-programming::http-server"]
 rust-version = { workspace = true }

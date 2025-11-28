@@ -1,9 +1,5 @@
 # Servable: a simple web framework
 
-### TODO:
-- cache-bust fonts in css (dynamic replace in css (fonts))
-
-
 [![CI](https://github.com/rm-dr/servable/workflows/CI/badge.svg)](https://github.com/rm-dr/servable/actions) 
 [![Cargo](https://img.shields.io/crates/v/servable.svg)](https://crates.io/crates/servable) 
 [![API reference](https://docs.rs/servable/badge.svg)](https://docs.rs/servable/)
@@ -206,3 +202,6 @@ println!("Css is at {route}");
 let router = ServableRouter::new()
 	.add_page_with_route(&HTMX);
 ```
+
+## TODO:
+- cache-busting fonts in css is not possible, we need to dynamic replace urls
