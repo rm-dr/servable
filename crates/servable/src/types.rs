@@ -58,8 +58,8 @@ pub struct Rendered<T: RenderedBodyType> {
 	/// If none, don't cache.
 	pub ttl: Option<TimeDelta>,
 
-	/// If true, the data at this route will never change.
-	pub immutable: bool,
+	/// If true, this response sets `Cache-Control: private`
+	pub private: bool,
 }
 
 impl Rendered<()> {
@@ -71,7 +71,7 @@ impl Rendered<()> {
 			body,
 			mime: self.mime,
 			ttl: self.ttl,
-			immutable: self.immutable,
+			private: self.private,
 		}
 	}
 }

@@ -1,17 +1,19 @@
 # Servable: a simple web framework
 
+### TODO:
+- cache-bust fonts in css (dynamic replace in css (fonts))
+
+
 [![CI](https://github.com/rm-dr/servable/workflows/CI/badge.svg)](https://github.com/rm-dr/servable/actions) 
 [![Cargo](https://img.shields.io/crates/v/servable.svg)](https://crates.io/crates/servable) 
 [![API reference](https://docs.rs/servable/badge.svg)](https://docs.rs/servable/)
 
-A tiny, convenient web micro-framework built around [htmx](https://htmx.org), [Axum](https://github.com/tokio-rs/axum), and [Maud](https://maud.lambda.xyz).
-Inspired by the "MASH" stack described [here](https://yree.io/mash) and [here](https://emschwartz.me/building-a-fast-website-with-the-mash-stack-in-rust).
-
-
+A minimal, convenient web micro-framework built around [htmx](https://htmx.org), [Axum](https://github.com/tokio-rs/axum), and [Maud](https://maud.lambda.xyz). \
+This powers [my homepage](https://betalupi.com). See example usage [here](https://git.betalupi.com/Mark/webpage/src/branch/main/crates/service/service-webpage/src/routes/mod.rs).
 
 ## Features
 
-`servable` provides abstractions that implement common utilities needed by an http server. \
+`servable` provides abstractions that implement common utilities needed by an http server.
 
 - response headers and cache-busting utilities
 - client device detection (mobile / desktop)
@@ -63,6 +65,7 @@ The `Servable` trait is the foundation of this stack. \
 	let asset = StaticAsset {
 		bytes: b"body { color: red; }",
 		mime: MimeType::Css,
+		ttl: StaticAsset::DEFAULT_TTL
 	};
 	```
 
@@ -104,10 +107,10 @@ A `ServableRouter` exposes a collection of `Servable`s under different routes. I
 
 ```rust
 # use servable::{ServableRouter, StaticAsset, mime::MimeType};
-# let home_page = StaticAsset { bytes: b"home", mime: MimeType::Html };
-# let about_page = StaticAsset { bytes: b"about", mime: MimeType::Html };
-# let stylesheet = StaticAsset { bytes: b"css", mime: MimeType::Css };
-# let custom_404_page = StaticAsset { bytes: b"404", mime: MimeType::Html };
+# let home_page = StaticAsset { bytes: b"home", mime: MimeType::Html, ttl: StaticAsset::DEFAULT_TTL};
+# let about_page = StaticAsset { bytes: b"about", mime: MimeType::Html, ttl: StaticAsset::DEFAULT_TTL };
+# let stylesheet = StaticAsset { bytes: b"css", mime: MimeType::Css, ttl: StaticAsset::DEFAULT_TTL };
+# let custom_404_page = StaticAsset { bytes: b"404", mime: MimeType::Html, ttl: StaticAsset::DEFAULT_TTL };
 let route = ServableRouter::new()
 	.add_page("/", home_page)
 	.add_page("/about", about_page)
@@ -129,6 +132,7 @@ let route = ServableRouter::new()
 			StaticAsset {
 				bytes: b"fake image data",
 				mime: MimeType::Png,
+				ttl: StaticAsset::DEFAULT_TTL
 			}
 		);
 	```
@@ -139,13 +143,13 @@ let route = ServableRouter::new()
 	GET /image.png
 
 	# Resize to max 800px on longest side
-	GET /image.png?t=maxdim(800)
+	GET /image.png?t=maxdim(800,800)
 
 	# Crop to a 400x400 square at the center of the image
 	GET /image.png?t=crop(400,400,c)
 
 	# Chain transformations and transcode
-	GET /image.png?t=maxdim(800);crop(400,400);format(webp)
+	GET /image.png?t=maxdim(800,800);crop(400,400);format(webp)
 	```
 
 
@@ -171,9 +175,34 @@ use servable::HtmlPage;
 
 let page = HtmlPage::default()
 	.with_ttl(Some(TimeDelta::hours(1)))
-	.with_immutable(false);
+	.with_private(false);
 ```
 
 Headers are automatically generated:
-- `Cache-Control: public, max-age=3600`
-- `Cache-Control: immutable, public, max-age=31536000` (for immutable assets)
+- `Cache-Control: public, max-age=3600` (default)
+- `Cache-Control: private, max-age=31536000` (if `private` is true)
+
+We also provide a static `CACHE_BUST_STR`, which may be formatted into urls to force cache refresh
+whenever the server is restarted:
+
+```rust
+use chrono::TimeDelta;
+use servable::{HtmlPage, CACHE_BUST_STR, ServableWithRoute, StaticAsset, ServableRouter};
+use servable::mime::MimeType;
+
+pub static HTMX: ServableWithRoute<StaticAsset> = ServableWithRoute::new(
+	|| format!("/{}/main.css", *CACHE_BUST_STR),
+	StaticAsset {
+		bytes: "div{}".as_bytes(),
+		mime: MimeType::Css,
+		ttl: StaticAsset::DEFAULT_TTL,
+	},
+);
+
+
+let route = HTMX.route();
+println!("Css is at {route}");
+
+let router = ServableRouter::new()
+	.add_page_with_route(&HTMX);
+```

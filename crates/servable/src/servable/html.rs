@@ -52,7 +52,7 @@ pub struct HtmlPage {
 	pub meta: PageMetadata,
 
 	/// If true, the contents of this page never change
-	pub immutable: bool,
+	pub private: bool,
 
 	/// How long this page's html may be cached.
 	/// This controls the maximum age of a page shown to the user.
@@ -94,7 +94,7 @@ impl Default for HtmlPage {
 		HtmlPage {
 			// No cache by default
 			ttl: None,
-			immutable: false,
+			private: false,
 
 			meta: Default::default(),
 			render: Arc::new(|_, _| Box::pin(async { html!() })),
@@ -132,10 +132,10 @@ impl HtmlPage {
 		self
 	}
 
-	/// Set `self.immutable`
+	/// Set `self.private`
 	#[inline(always)]
-	pub fn with_immutable(mut self, immutable: bool) -> Self {
-		self.immutable = immutable;
+	pub fn with_private(mut self, private: bool) -> Self {
+		self.private = private;
 		self
 	}
 
@@ -223,7 +223,7 @@ impl Servable for HtmlPage {
 				code: self.response_code,
 				body: (),
 				ttl: self.ttl,
-				immutable: self.immutable,
+				private: self.private,
 				headers: HeaderMap::new(),
 				mime: Some(MimeType::Html),
 			};

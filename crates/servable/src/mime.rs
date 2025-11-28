@@ -225,6 +225,13 @@ impl<'de> Deserialize<'de> for MimeType {
 
 impl Default for MimeType {
 	fn default() -> Self {
+		Self::const_default()
+	}
+}
+
+impl MimeType {
+	/// [Default::default], but const
+	pub const fn const_default() -> Self {
 		Self::Blob
 	}
 }
