@@ -1,10 +1,10 @@
 use image::{DynamicImage, ImageFormat};
+use mime::Mime;
 use serde::{Deserialize, Deserializer, de};
 use std::{fmt::Display, hash::Hash, io::Cursor, str::FromStr};
 use thiserror::Error;
 
 use super::transformers::{ImageTransformer, TransformerEnum};
-use crate::mime::MimeType;
 
 #[expect(missing_docs)]
 #[derive(Debug, Error)]
@@ -28,7 +28,7 @@ pub struct TransformerChain {
 impl TransformerChain {
 	/// Returns `true` if `mime` is a type that can be transformed
 	#[inline(always)]
-	pub fn mime_is_image(mime: &MimeType) -> bool {
+	pub fn mime_is_image(mime: &Mime) -> bool {
 		ImageFormat::from_mime_type(mime.to_string()).is_some()
 	}
 
@@ -50,12 +50,14 @@ impl TransformerChain {
 	/// with type `input_mime`. If this returns `None`, the input mime
 	/// cannot be transformed.
 	#[inline(always)]
-	pub fn output_mime(&self, input_mime: &MimeType) -> Option<MimeType> {
+	pub fn output_mime(&self, input_mime: &Mime) -> Option<Mime> {
 		let mime = self
 			.steps
 			.last()
 			.and_then(|x| match x {
-				TransformerEnum::Format { format } => Some(MimeType::from(format.to_mime_type())),
+				TransformerEnum::Format { format } => Some(
+					Mime::from_str(format.to_mime_type()).unwrap_or(mime::APPLICATION_OCTET_STREAM),
+				),
 				_ => None,
 			})
 			.unwrap_or(input_mime.clone());
@@ -72,8 +74,8 @@ impl TransformerChain {
 	pub fn transform_bytes(
 		&self,
 		image_bytes: &[u8],
-		image_format: Option<&MimeType>,
-	) -> Result<(MimeType, Vec<u8>), TransformBytesError> {
+		image_format: Option<&Mime>,
+	) -> Result<(Mime, Vec<u8>), TransformBytesError> {
 		let format: ImageFormat = match image_format {
 			Some(x) => ImageFormat::from_mime_type(x.to_string())
 				.ok_or(TransformBytesError::NotAnImage(x.to_string()))?,
@@ -92,7 +94,8 @@ impl TransformerChain {
 		let img = image::load_from_memory_with_format(image_bytes, format)?;
 		let img = self.transform_image(img);
 
-		let out_mime = MimeType::from(out_format.to_mime_type());
+		let out_mime =
+			Mime::from_str(out_format.to_mime_type()).unwrap_or(mime::APPLICATION_OCTET_STREAM);
 		let mut out_bytes = Cursor::new(Vec::new());
 		img.write_to(&mut out_bytes, *out_format)?;
 

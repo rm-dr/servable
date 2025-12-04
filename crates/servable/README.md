@@ -32,7 +32,7 @@ async fn main() {
 			"/hello",
 			StaticAsset {
 				bytes: b"Hello, World!",
-				mime: MimeType::Text,
+				mime: mime::TEXT_PLAIN
 			},
 		);
 
@@ -56,11 +56,11 @@ The `Servable` trait is the foundation of this stack. \
 
 - `StaticAsset`, for static files like CSS, JavaScript, images, or plain bytes:
 	```rust
-	use servable::{StaticAsset, mime::MimeType};
+	use servable::{StaticAsset};
 
 	let asset = StaticAsset {
 		bytes: b"body { color: red; }",
-		mime: MimeType::Css,
+		mime: mime::TEXT_CSS,
 		ttl: StaticAsset::DEFAULT_TTL
 	};
 	```
@@ -102,11 +102,11 @@ The `Servable` trait is the foundation of this stack. \
 A `ServableRouter` exposes a collection of `Servable`s under different routes. It implements `tower`'s `Service` trait, and can be easily be converted into an Axum `Router`. Construct one as follows:
 
 ```rust
-# use servable::{ServableRouter, StaticAsset, mime::MimeType};
-# let home_page = StaticAsset { bytes: b"home", mime: MimeType::Html, ttl: StaticAsset::DEFAULT_TTL};
-# let about_page = StaticAsset { bytes: b"about", mime: MimeType::Html, ttl: StaticAsset::DEFAULT_TTL };
-# let stylesheet = StaticAsset { bytes: b"css", mime: MimeType::Css, ttl: StaticAsset::DEFAULT_TTL };
-# let custom_404_page = StaticAsset { bytes: b"404", mime: MimeType::Html, ttl: StaticAsset::DEFAULT_TTL };
+# use servable::{ServableRouter, StaticAsset};
+# let home_page = StaticAsset { bytes: b"home", mime: mime::TEXT_HTML, ttl: StaticAsset::DEFAULT_TTL};
+# let about_page = StaticAsset { bytes: b"about", mime: mime::TEXT_HTML, ttl: StaticAsset::DEFAULT_TTL };
+# let stylesheet = StaticAsset { bytes: b"css", mime: mime::TEXT_CSS, ttl: StaticAsset::DEFAULT_TTL };
+# let custom_404_page = StaticAsset { bytes: b"404", mime: mime::TEXT_HTML, ttl: StaticAsset::DEFAULT_TTL };
 let route = ServableRouter::new()
 	.add_page("/", home_page)
 	.add_page("/about", about_page)
@@ -121,13 +121,13 @@ let route = ServableRouter::new()
 
 	When `image` is enabled, the image below...
 	```rust
-	# use servable::{ServableRouter, StaticAsset, mime::MimeType};
+	# use servable::{ServableRouter, StaticAsset};
 	let route = ServableRouter::new()
 		.add_page(
 			"/image.png",
 			StaticAsset {
 				bytes: b"fake image data",
-				mime: MimeType::Png,
+				mime: mime::IMAGE_PNG,
 				ttl: StaticAsset::DEFAULT_TTL
 			}
 		);
@@ -184,13 +184,12 @@ whenever the server is restarted:
 ```rust
 use chrono::TimeDelta;
 use servable::{HtmlPage, CACHE_BUST_STR, ServableWithRoute, StaticAsset, ServableRouter};
-use servable::mime::MimeType;
 
 pub static HTMX: ServableWithRoute<StaticAsset> = ServableWithRoute::new(
 	|| format!("/{}/main.css", *CACHE_BUST_STR),
 	StaticAsset {
 		bytes: "div{}".as_bytes(),
-		mime: MimeType::Css,
+		mime: mime::TEXT_CSS,
 		ttl: StaticAsset::DEFAULT_TTL,
 	},
 );

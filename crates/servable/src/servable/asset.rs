@@ -1,8 +1,9 @@
 use axum::http::{HeaderMap, StatusCode};
 use chrono::TimeDelta;
+use mime::Mime;
 use std::pin::Pin;
 
-use crate::{RenderContext, Rendered, RenderedBody, mime::MimeType, servable::Servable};
+use crate::{RenderContext, Rendered, RenderedBody, servable::Servable};
 
 /// A static blob of bytes
 pub struct StaticAsset {
@@ -10,8 +11,7 @@ pub struct StaticAsset {
 	pub bytes: &'static [u8],
 
 	/// The type of `bytes`
-	pub mime: MimeType,
-
+	pub mime: Mime,
 	/// How long to cache this response.
 	/// If None, never cache
 	pub ttl: Option<TimeDelta>,
