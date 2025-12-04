@@ -1,8 +1,7 @@
 use axum::http::{HeaderMap, StatusCode};
 use chrono::TimeDelta;
+use mime::Mime;
 use std::collections::BTreeMap;
-
-use crate::mime::MimeType;
 
 //
 // MARK: rendered
@@ -52,7 +51,7 @@ pub struct Rendered<T: RenderedBodyType> {
 	pub body: T,
 
 	/// The type of `self.body`
-	pub mime: Option<MimeType>,
+	pub mime: Option<Mime>,
 
 	/// How long to cache this response.
 	/// If none, don't cache.
@@ -93,20 +92,17 @@ pub struct RenderContext {
 
 /// The type of device that requested a page
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Default)]
 pub enum DeviceType {
 	/// This is a mobile device, like a phone.
 	Mobile,
 
 	/// This is a device with a large screen
 	/// and a mouse, like a laptop.
-	Desktop,
+	#[default]
+ Desktop,
 }
 
-impl Default for DeviceType {
-	fn default() -> Self {
-		Self::Desktop
-	}
-}
 
 /// Inferred information about the client
 /// that requested a certain route.

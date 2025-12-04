@@ -4,7 +4,7 @@ use maud::{DOCTYPE, Markup, PreEscaped, html};
 use serde::Deserialize;
 use std::{hash::Hash, pin::Pin, sync::Arc};
 
-use crate::{RenderContext, Rendered, RenderedBody, mime::MimeType, servable::Servable};
+use crate::{RenderContext, Rendered, RenderedBody, servable::Servable};
 
 #[expect(missing_docs)]
 #[derive(Debug, Clone, Hash, PartialEq, Eq, Deserialize)]
@@ -225,7 +225,7 @@ impl Servable for HtmlPage {
 				ttl: self.ttl,
 				private: self.private,
 				headers: HeaderMap::new(),
-				mime: Some(MimeType::Html),
+				mime: Some(mime::TEXT_HTML),
 			};
 		})
 	}

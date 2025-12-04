@@ -23,6 +23,7 @@ serde_urlencoded = { workspace = true }
 tower = { workspace = true }
 tracing = { workspace = true }
 rand = { workspace = true }
+mime = { workspace = true }
 
 tokio = { workspace = true, optional = true }
 image = { workspace = true, optional = true }

@@ -19,7 +19,6 @@ use tracing::trace;
 
 use crate::{
 	ClientInfo, RenderContext, Rendered, RenderedBody,
-	mime::MimeType,
 	servable::{Servable, ServableWithRoute},
 };
 
@@ -36,7 +35,7 @@ impl Servable for Default404 {
 				body: (),
 				ttl: Some(TimeDelta::days(1)),
 				headers: HeaderMap::new(),
-				mime: Some(MimeType::Html),
+				mime: Some(mime::TEXT_HTML),
 				private: false,
 			};
 		})
@@ -54,7 +53,7 @@ impl Servable for Default404 {
 ///
 /// Use as follows:
 /// ```rust
-/// use servable::{ServableRouter, StaticAsset, mime::MimeType};
+/// use servable::{ServableRouter, StaticAsset};
 /// use axum::Router;
 /// use tower_http::compression::{CompressionLayer, predicate::DefaultPredicate};
 ///
@@ -72,7 +71,7 @@ impl Servable for Default404 {
 /// 		"/page",
 /// 		StaticAsset {
 /// 			bytes: "I am a page".as_bytes(),
-/// 			mime: MimeType::Text,
+/// 			mime: mime::TEXT_PLAIN,
 /// 			ttl: StaticAsset::DEFAULT_TTL
 /// 		},
 /// 	);
@@ -273,7 +272,7 @@ impl Service<Request<Body>> for ServableRouter {
 					#[expect(clippy::unwrap_used)]
 					rend.headers.insert(
 						header::CONTENT_TYPE,
-						HeaderValue::from_str(&mime.to_string()).unwrap(),
+						HeaderValue::from_str(mime.as_ref()).unwrap(),
 					);
 				}
 			}

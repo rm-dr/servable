@@ -4,8 +4,6 @@
 // and needs a different relative path than cargo build.
 // https://github.com/rust-lang/cargo/issues/13309
 
-pub mod mime;
-
 mod types;
 
 use rand::{Rng, distr::Alphanumeric};
@@ -47,7 +45,7 @@ pub static CACHE_BUST_STR: std::sync::LazyLock<String> = std::sync::LazyLock::ne
 #[cfg(feature = "htmx-2.0.8")]
 pub const HTMX_2_0_8: servable::StaticAsset = servable::StaticAsset {
 	bytes: include_str!("../htmx/htmx-2.0.8.min.js").as_bytes(),
-	mime: mime::MimeType::Javascript,
+	mime: mime::TEXT_JAVASCRIPT,
 	ttl: StaticAsset::DEFAULT_TTL,
 };
 
@@ -57,6 +55,6 @@ pub const HTMX_2_0_8: servable::StaticAsset = servable::StaticAsset {
 #[cfg(feature = "htmx-2.0.8")]
 pub const EXT_JSON_1_19_12: servable::StaticAsset = servable::StaticAsset {
 	bytes: include_str!("../htmx/json-enc-1.9.12.js").as_bytes(),
-	mime: mime::MimeType::Javascript,
+	mime: mime::TEXT_JAVASCRIPT,
 	ttl: StaticAsset::DEFAULT_TTL,
 };
