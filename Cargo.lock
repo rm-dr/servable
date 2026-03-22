@@ -1274,7 +1274,7 @@ dependencies = [
 
 [[package]]
 name = "servable"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "axum",
  "chrono",
