@@ -91,8 +91,7 @@ pub struct RenderContext {
 }
 
 /// The type of device that requested a page
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum DeviceType {
 	/// This is a mobile device, like a phone.
 	Mobile,
@@ -100,9 +99,8 @@ pub enum DeviceType {
 	/// This is a device with a large screen
 	/// and a mouse, like a laptop.
 	#[default]
- Desktop,
+	Desktop,
 }
-
 
 /// Inferred information about the client
 /// that requested a certain route.

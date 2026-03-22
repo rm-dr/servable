@@ -60,6 +60,12 @@ impl<S: Servable> ServableWithRoute<S> {
 	pub fn route(&self) -> &str {
 		&self.route
 	}
+
+	/// Get the route associated with this resource,
+	/// with the given prefix
+	pub fn route_at(&self, prefix: &str) -> String {
+		format!("{prefix}/{}", &*self.route)
+	}
 }
 
 impl<S: Servable> Servable for ServableWithRoute<S> {
