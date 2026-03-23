@@ -88,7 +88,7 @@ impl<S: Servable> Servable for ServableWithRoute<S> {
 	}
 }
 
-impl<S: Servable> Servable for &'static S {
+impl<S: Servable> Servable for &S {
 	#[inline(always)]
 	fn head<'a>(
 		&'a self,
